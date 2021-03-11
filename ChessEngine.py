@@ -23,6 +23,5 @@ class GameState():
             board[7][i] = "wP" + start[i]
             board[8][i] = "w" + start[i]
 
-gamestate =  GameState
 
 

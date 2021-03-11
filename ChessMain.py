@@ -1,9 +1,9 @@
 """
 Dieses Skrip ist das Frontend, es kümmert sich um das GUI, Interaktion mit dem Nutzer,
-Darstellung des Bretts und des aktuellen Spielstandes etc
+Darstellung des Bretts und des aktuellen Spielstandes etc.
 """
 import pygame as p
-from Python Chess import ChessEngine
+import ChessEngine
 
 Breite = Höhe = 400
 Dimension = 8
@@ -11,7 +11,8 @@ Quadrat_Grösse = Höhe // Dimension
 Max_FPS = 15
 Bilder = {}
 
-def Bilder_laden():
+
+def bilder_laden():
     Figuren = ['wp', 'wR', 'wN', 'wB', 'wK', 'wQ', 'bp', 'bR', 'bN', 'bB', 'bK', 'bQ']
     for Figur in Figuren:
         Bilder[Figur] = p.transform.scale(p.Bild.laden("images/"+ Figur + ".png"), (Quadrat_Grösse, Quadrat_Grösse))
@@ -19,6 +20,7 @@ def Bilder_laden():
 """
 grafik und input
 """
+
 def main():
     p.init()
     screen = p.display.set_mode(Breite, Höhe)
@@ -35,6 +37,7 @@ def main():
         drawGameState(screen, gs)
         clock.tick(Max_FPS)
         p.display.flip()
+
 
 def drawGameState(screen, gs):
     drawBoard(screen) #Quadrate zeichnen
@@ -55,4 +58,6 @@ def drawFiguren(screen, board):
 
 
 
+
+if __name__ == "__main__":
     main()
