@@ -18,8 +18,8 @@ class GameState():
     def init_board(self, board):
         for i in range(8):
             board[0][i] = "b" + start[i]
-            board[1][i] = "bP"
-            board[6][i] = "wP"
+            board[1][i] = "bp"
+            board[6][i] = "wp"
             board[7][i] = "w" + start[i]
 
 

@@ -34,7 +34,7 @@ def main():
     Spielerklickt = []
     while running:
         for e in p.event.get():
-            if e.type == p-QUIT:
+            if e.type == p.QUIT:
                 running = False
             elif e.type == p.MOUSEBUTTONDOWN:
                 location = p.mouse.get_pos()
@@ -65,7 +65,7 @@ def drawGameState(screen, gs):
 
 
 def drawBoard(screen):
-    colors = [p.Color("white"), p.Color("black")]
+    colors = [p.Color("white"), p.Color("dark gray")]
     for r in range(Dimension):
         for c in range(Dimension):
             color = colors[((r+c)%2)]
@@ -77,7 +77,7 @@ def drawFiguren(screen, board):
         for c in range(Dimension):
             Figur = board[r][c]
             if Figur != "--":
-                screen.blit(Bilder[Figuren],p.Rect(c*Quadrat_Grösse, r*Quadrat_Grösse, Quadrat_Grösse, Quadrat_Grösse))
+                screen.blit(Bilder[Figur],p.Rect(c*Quadrat_Grösse, r*Quadrat_Grösse, Quadrat_Grösse, Quadrat_Grösse))
 
 
 
