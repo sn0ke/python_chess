@@ -15,7 +15,7 @@ Bilder = {}
 def bilder_laden():
     Figuren = ['wp', 'wR', 'wN', 'wB', 'wK', 'wQ', 'bp', 'bR', 'bN', 'bB', 'bK', 'bQ']
     for Figur in Figuren:
-        Bilder[Figur] = p.transform.scale(p.Bild.laden("images/"+ Figur + ".png"), (Quadrat_Grösse, Quadrat_Grösse))
+        Bilder[Figur] = p.transform.scale(p.image.load("assets/images/"+ Figur + ".png"), (Quadrat_Grösse, Quadrat_Grösse))
 
 """
 grafik und input
@@ -28,7 +28,7 @@ def main():
     screen.fill(p.Color("white"))
     gs = ChessEngine.GameState()
     print(gs.board)
-    Bilder_laden()
+    bilder_laden()
     running = True
     QuSelected = ()
     Spielerklickt = []

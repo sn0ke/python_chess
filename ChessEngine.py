@@ -11,17 +11,16 @@ class GameState():
         self.board = [["--" for i in range(8)] for i in range(8)]
         #Brett füllen
         self.init_board(self.board)
-        print(self.board)
         self.whiteToMove = True
         self.moveLog = []
 
     #Startaufstellung initialisieren
     def init_board(self, board):
         for i in range(8):
-            board[1][i] = "b" + start[i]
-            board[2][i] = "bP" + start[i]
-            board[7][i] = "wP" + start[i]
-            board[8][i] = "w" + start[i]
+            board[0][i] = "b" + start[i]
+            board[1][i] = "bP"
+            board[6][i] = "wP"
+            board[7][i] = "w" + start[i]
 
 
 gs = GameState()
