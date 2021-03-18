@@ -24,4 +24,6 @@ class GameState():
             board[8][i] = "w" + start[i]
 
 
+gs = GameState()
 
+print(gs.board)
