@@ -5,9 +5,9 @@ Darstellung des Bretts und des aktuellen Spielstandes etc.
 import pygame as p
 import ChessEngine
 
-Breite = Höhe = 400
+Breite = Height = 400
 Dimension = 8
-Quadrat_Grösse = Höhe // Dimension
+SQ_Size = Height // Dimension
 Max_FPS = 15
 Bilder = {}
 
@@ -15,7 +15,7 @@ Bilder = {}
 def bilder_laden():
     Figuren = ['wp', 'wR', 'wN', 'wB', 'wK', 'wQ', 'bp', 'bR', 'bN', 'bB', 'bK', 'bQ']
     for Figur in Figuren:
-        Bilder[Figur] = p.transform.scale(p.image.load("assets/images/"+ Figur + ".png"), (Quadrat_Grösse, Quadrat_Grösse))
+        Bilder[Figur] = p.transform.scale(p.image.load("assets/images/"+ Figur + ".png"), (SQ_Size, SQ_Size))
 
 """
 grafik und input
@@ -23,7 +23,7 @@ grafik und input
 
 def main():
     p.init()
-    screen = p.display.set_mode((Breite, Höhe))
+    screen = p.display.set_mode((Breite, Height))
     clock = p.time.Clock()
     screen.fill(p.Color("white"))
     gs = ChessEngine.GameState()
@@ -37,9 +37,9 @@ def main():
             if e.type == p.QUIT:
                 running = False
             elif e.type == p.MOUSEBUTTONDOWN:
-                location = p.mouse.get_pos()
-                col = location[0]//Quadrat_Grösse
-                row = location[1]//Quadrat_Grösse
+                location = p.mouse.get_pos() # (x, y) Position der Maus im Fenster
+                col = location[0]//SQ_Size
+                row = location[1]//SQ_Size
                 if QuSelected == (row, col):
                     QuSelected = ()
                     Spielerklickt = []
@@ -59,9 +59,9 @@ def main():
 
 
 def drawGameState(screen, gs):
-    drawBoard(screen) #Quadrate zeichnen
+    drawBoard(screen) # Quadrate zeichnen
 
-    drawFiguren(screen, gs.board) #Figuren zeichnen auf den Quadraten
+    drawFiguren(screen, gs.board)  # Figuren zeichnen auf den Quadraten
 
 
 def drawBoard(screen):
@@ -69,7 +69,7 @@ def drawBoard(screen):
     for r in range(Dimension):
         for c in range(Dimension):
             color = colors[((r+c)%2)]
-            p.draw.rect(screen, color, p.Rect(c*Quadrat_Grösse, r*Quadrat_Grösse, Quadrat_Grösse, Quadrat_Grösse))
+            p.draw.rect(screen, color, p.Rect(c*SQ_Size, r*SQ_Size, SQ_Size, SQ_Size))
 
 
 def drawFiguren(screen, board):
@@ -77,7 +77,7 @@ def drawFiguren(screen, board):
         for c in range(Dimension):
             Figur = board[r][c]
             if Figur != "--":
-                screen.blit(Bilder[Figur],p.Rect(c*Quadrat_Grösse, r*Quadrat_Grösse, Quadrat_Grösse, Quadrat_Grösse))
+                screen.blit(Bilder[Figur],p.Rect(c*SQ_Size, r*SQ_Size, SQ_Size, SQ_Size))
 
 
 
