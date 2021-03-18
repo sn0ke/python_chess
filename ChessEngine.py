@@ -22,6 +22,9 @@ class GameState():
             board[6][i] = "wp"
             board[7][i] = "w" + setup[i]
 
+    def makeMove(self, move):
+
+
 
 class Move():
     ranksToRows = {"1": 7, "2": 6, "3": 5, "4": 4, "5": 3, "6": 2, "7": 1, "8": 0}
