@@ -27,6 +27,9 @@ def main():
     clock = p.time.Clock()
     screen.fill(p.Color("white"))
     gs = ChessEngine.GameState()
+    validMoves = gs.getValidMoves()
+    moveMade = False
+
     print(gs.board)
     bilder_laden()
     running = True
@@ -49,14 +52,39 @@ def main():
                 if len(Spielerklickt) == 2:
                     move = ChessEngine.Move(Spielerklickt[0], Spielerklickt[1], gs.board)
                     print(move.getSchachNotation())
-                    gs.makeMove(move)
-                    QuSelected = ()
-                    Spielerklickt = []
+                    for i in range(len(validMoves)):
+                     if move == validMoves[i]:
+                        gs.makeMove(move)
+                        moveMade = True
+                        QuSelected = ()
+                        Spielerklickt = []
+                if not moveMade:
+                        Spielerklickt = [QuSelected]
+
+            elif e.type == p.KEYDOWN:
+                if e.key == p.K_z:
+                    gs.undoMove
+                    moveMade = True
+        if moveMade:
+            validMoves = gs.getValidMoves()
+            moveMade = False
 
         drawGameState(screen, gs)
         clock.tick(Max_FPS)
         p.display.flip()
 
+def highlightQuadrate(screen, gs, validMoves, QuSelected):
+    if QuSelected != ():
+        r, c, = QuSelected
+        if gs.board[r][c][0]== ('w' if gs.whiteToMove else 'b'):
+            s = p.Surface((SQ_Size, SQ_Size))
+            s.set_alpha(100)
+            s.fill(p.Color('red'))
+            screen.blit(s, (c*SQ_Size, r*SQ_Size))
+            s.fill(p.Color('blue'))
+            for move in validMoves:
+                if move.startRow == r and move.startCol == c:
+                    screen.blit(s(move.endCol*SQ_Size, move.endRow*SQ_Size))
 
 def drawGameState(screen, gs):
     drawBoard(screen) # Quadrate zeichnen
