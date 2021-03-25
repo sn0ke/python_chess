@@ -51,7 +51,7 @@ def main():
                     Spielerklickt.append(QuSelected)
                 if len(Spielerklickt) == 2:
                     move = ChessEngine.Move(Spielerklickt[0], Spielerklickt[1], gs.board)
-                    print(move.getSchachNotation())
+                    print(move.getChessNotation())
                     for i in range(len(validMoves)):
                      if move == validMoves[i]:
                         gs.makeMove(move)
@@ -63,7 +63,7 @@ def main():
 
             elif e.type == p.KEYDOWN:
                 if e.key == p.K_z:
-                    gs.undoMove
+                    gs.undoMove()
                     moveMade = True
         if moveMade:
             validMoves = gs.getValidMoves()
