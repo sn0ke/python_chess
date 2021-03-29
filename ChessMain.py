@@ -144,7 +144,7 @@ def drawFiguren(screen, board): #Figuren, Position
             Figur = board[r][c]
             if Figur != "--":
                 screen.blit(Bilder[Figur], p.Rect(c*SQ_Size, r*SQ_Size, SQ_Size, SQ_Size))
-
+"""
 def drawMoveLog(screen, gs, font):
     moveLogRect = p.Rect(Board_Breite, 0, MOVE_LOG_PANEL_BREITE, MOVE_LOG_PANEL_HEIGHT)
     p.draw.rect(screen, p.Color("black"), moveLogRect)
@@ -169,7 +169,7 @@ def drawMoveLog(screen, gs, font):
         textlocation = moveLogRect.move(padding, padding)
         screen.blit(textObject, textlocation)
         TextY += textObject.get_height() + lineSpacing
-
+"""
 def animateMove(move, screen, board, clock): #Animation von Zug
     global colors
     dR = move.endRow - move.startRow
