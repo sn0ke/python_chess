@@ -29,8 +29,6 @@ def main():
     gs = ChessEngine.GameState()
     validMoves = gs.getValidMoves()
     moveMade = False
-
-    print(gs.board)
     bilder_laden()
     running = True
     QuSelected = ()
@@ -43,6 +41,7 @@ def main():
                 location = p.mouse.get_pos() # (x, y) Position der Maus im Fenster
                 col = location[0]//SQ_Size
                 row = location[1]//SQ_Size
+                #print((row,col))
                 if QuSelected == (row, col):
                     QuSelected = ()
                     Spielerklickt = []
@@ -51,7 +50,7 @@ def main():
                     Spielerklickt.append(QuSelected)
                 if len(Spielerklickt) == 2:
                     move = ChessEngine.Move(Spielerklickt[0], Spielerklickt[1], gs.board)
-                    print(move.getChessNotation())
+                    #print(move.getChessNotation())
                     for i in range(len(validMoves)):
                      if move == validMoves[i]:
                         gs.makeMove(move)

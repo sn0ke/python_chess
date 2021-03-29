@@ -33,8 +33,8 @@ class GameState():
 	def undoMove(self):
 		if len(self.moveLog) != 0:
 			lastmove = self.moveLog[-1]
-			self.board[lastmove.startRow][lastmove.startCol] = lastmove.pieceMoved
-			self.board[lastmove.endRow][lastmove.endCol] = lastmove.pieceCaptured
+			self.board[lastmove.startRow][lastmove.startColumn] = lastmove.pieceMoved
+			self.board[lastmove.endRow][lastmove.endColumn] = lastmove.pieceCaptured
 			self.whiteToMove = not self.whiteToMove
 			del self.moveLog[-1]
 
@@ -44,12 +44,13 @@ class GameState():
 
 	# Listet alle möglichen Züge auf, ohne auf Schach zu achten
 	def getPossibleMoves(self):
+		print(self.board)
 		moves = []
 		for r in range(len(self.board)):
 			for c in range(len(self.board[r])):
 				colour = self.board[r][c][0]
 				piece = self.board[r][c][1]
-				if (colour == "w" and self.whiteToMove) and (colour == "b"and not self.whiteToMove):
+				if (colour == "w" and self.whiteToMove) or (colour == "b" and not self.whiteToMove):
 					if piece == "p":
 						self. getPawnMoves(r, c, moves)
 					if piece == "R":
@@ -62,25 +63,124 @@ class GameState():
 						self.getQueenMoves(r, c, moves)
 					if piece == "K":
 						self.getKingMoves(r, c, moves)
+		print(len(moves))
 		return moves
 
 	def getPawnMoves(self, r, c, moves):
-		pass
+		if self.whiteToMove:
+			if self.board[r-1][c] == "--": #überprüfe, ob sich 1 Feld vor dem Bauern eine Figur befindet
+				moves.append(Move((r, c), (r-1, c), self.board))
+				if self.board[r-2][c] == "--" and r ==6: #überprüfe, ob sich 2 Felder vor dem Bauern eine Figur befindet und ob er sich noch auf seiner Startposition befindet
+					moves.append(Move((r, c), (r-2, c), self.board))
+
+			if 0 <= c <= 7:
+				colLeft = c-1
+				colRight = c+1
+				if colLeft >= 0:
+					if self.board[r - 1][colLeft][0] == "b":
+						moves.append(Move((r, c), (r - 1, colLeft), self.board))
+				if colRight <= 7:
+					if self.board[r-1][colRight][0] == "b" and colRight <= 7:
+						moves.append(Move((r, c), (r-1, colRight), self.board))
+
+		if not self.whiteToMove:
+			if self.board[r+1][c] == "--": #überprüfe, ob sich 1 Feld vor dem Bauern eine Figur befindet
+				moves.append(Move((r, c), (r+1, c), self.board))
+				if self.board[r+2][c] == "--" and r ==1: #überprüfe, ob sich 2 Felder vor dem Bauern eine Figur befindet und ob er sich noch auf seiner Startposition befindet
+					moves.append(Move((r, c), (r+2, c), self.board))
+
+			if 0 <= c <= 7:
+				colLeft = c-1
+				colRight = c+1
+				if colLeft >= 0:
+					if self.board[r+1][colLeft][0] == "w":
+						moves.append(Move((r, c), (r+1, colLeft), self.board))
+				if colRight <= 7:
+					if self.board[r+1][colRight][0] == "w":
+						moves.append(Move((r, c), (r+1, colRight), self.board))
 
 	def getRookMoves(self, r, c, moves):
-		pass
+		directions = [(1, 0), (-1, 0), (0, 1), (0, -1)]
+		opponentColor = "b" if self.whiteToMove else "w"
+		for d in directions:
+			for i in range(1, 7):
+				horDir = c + (i * d[1])
+				vertDir = r + (i * d[0])
+				if 0 <= horDir <=7 and 0 <= vertDir <=7:
+					if self.board[vertDir][horDir] == "--":
+						moves.append(Move((r, c), (vertDir, horDir), self.board))
+					elif self.board[vertDir][horDir][0] == opponentColor:
+						moves.append(Move((r, c), (vertDir, horDir), self.board))
+						break
+					else:
+						break
+				else:
+					break
+		return moves
 
 	def getNiteMoves(self, r, c, moves):
-		pass
+		directions = [(2, 1), (2, -1), (1, 2), (-1, 2), (-2, 1), (-2, -1), (-1, -2), (1, -2)] # alle Bewegungsrichtungen
+		opponentColor = "b" if self.whiteToMove else "w"
+		for d in directions: # für jede Richtung prüfen, ob der Zug möglich ist, und falls ja zur moves Liste hinzufügen
+			horDir = c + d[1]
+			vertDir = r + d[0]
+			if 0 <= horDir <= 7 and 0 <= vertDir <= 7: # ist der Zug überhaupt möglich / auf dem Feld
+				if self.board[vertDir][horDir] == "--":
+					moves.append(Move((r, c), (vertDir, horDir), self.board))
+				elif self.board[vertDir][horDir][0] == opponentColor:
+					moves.append(Move((r, c), (vertDir, horDir), self.board))
+		return moves
 
 	def getBishopMoves(self, r, c, moves):
-		pass
+		directions = [(1, 1), (-1, -1), (-1, 1), (1, -1)]
+		opponentColor = "b" if self.whiteToMove else "w"
+		for d in directions:
+			for i in range(1, 7):
+				horDir = c + (i * d[1])
+				vertDir = r + (i * d[0])
+				if 0 <= horDir <= 7 and 0 <= vertDir <= 7:
+					if self.board[vertDir][horDir] == "--":
+						moves.append(Move((r, c), (vertDir, horDir), self.board))
+					elif self.board[vertDir][horDir][0] == opponentColor:
+						moves.append(Move((r, c), (vertDir, horDir), self.board))
+						break
+					else:
+						break
+				else:
+					break
+		return moves
 
 	def getQueenMoves(self, r, c, moves):
-		pass
+		directions = [(1, 0), (-1, 0), (0, 1), (0, -1), (1, 1), (-1, -1), (-1, 1), (1, -1)]
+		opponentColor = "b" if self.whiteToMove else "w"
+		for d in directions:
+			for i in range(1, 7):
+				horDir = c + (i * d[1])
+				vertDir = r + (i * d[0])
+				if 0 <= horDir <= 7 and 0 <= vertDir <= 7:
+					if self.board[vertDir][horDir] == "--":
+						moves.append(Move((r, c), (vertDir, horDir), self.board))
+					elif self.board[vertDir][horDir][0] == opponentColor:
+						moves.append(Move((r, c), (vertDir, horDir), self.board))
+						break
+					else:
+						break
+				else:
+					break
+		return moves
 
 	def getKingMoves(self, r, c, moves):
-		pass
+		directions = [(1, 0), (-1, 0), (0, 1), (0, -1), (1, 1), (-1, -1), (-1, 1), (1, -1)]
+		opponentColor = "b" if self.whiteToMove else "w"
+		for d in directions:
+			horDir = c + d[1]
+			vertDir = r + d[0]
+			if 0 <= horDir <= 7 and 0 <= vertDir <= 7:
+				if self.board[vertDir][horDir] == "--":
+					moves.append(Move((r, c), (vertDir, horDir), self.board))
+				elif self.board[vertDir][horDir][0] == opponentColor:
+					moves.append(Move((r, c), (vertDir, horDir), self.board))
+		return moves
 
 class Move():
 	# Diese Klasse kümmert sich um die Züge der Figuren
@@ -98,6 +198,8 @@ class Move():
 		self.pieceCaptured = board[self.endRow][self.endColumn]
 		self.moveID = self.startRow * 1000 + self.startColumn * 100 + self.endRow * 10 + self.endColumn
 
+	# Überschreiben der euqals Methode, welche dazu verwendet wird um herauszufinden, ob es sich bei zwei Instanzen um die selbe handelt.
+	# Da wir ja nicht überprüfen möchten, ob zwei verglichene Klassen exakt die selbe Klasse sind, sondern nur ob der Zug der selbe ist, lösen wir dies mit einer einfachen MoveID.
 	def __eq__(self, other):
 		if isinstance(other, Move):
 			return self.moveID == other.moveID
