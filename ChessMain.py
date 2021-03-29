@@ -3,7 +3,7 @@ Dieses Skrip ist das Frontend, es kümmert sich um das GUI, Interaktion mit dem 
 Darstellung des Bretts und des aktuellen Spielstandes etc.
 """
 import pygame as p
-import ChessEngine
+import ChessEngine, SmartMoveFinder
 
 Breite = Height = 400
 Dimension = 8
@@ -36,12 +36,15 @@ def main():
     SQ_Selected = ()
     Spielerklickt = []
     gameOver = False
+    playerOne = True #Wahr wenn Mensch weiss spielt, falsch wenn AI spielt
+    playerTwo = False #gleiches wie oben aber für schwarz
     while running:
+        humanTurn = (gs.whiteToMove and playerOne) or (not gs.whiteToMove and playerTwo)
         for e in p.event.get():
             if e.type == p.QUIT:
                 running = False
             elif e.type == p.MOUSEBUTTONDOWN:
-                if not gameOver:
+                if not gameOver and humanTurn:
                     location = p.mouse.get_pos() # (x, y) Position der Maus im Fenster
                     col = location[0]//SQ_Size
                     row = location[1]//SQ_Size
@@ -75,6 +78,15 @@ def main():
                     Spielerklickt = []
                     moveMade = False
                     animate = False
+
+        if not gameOver and not humanTurn: #AI move finder
+            AIMove = SmartMoveFinder.findBestMove(gs, validMoves)
+            if AIMove is None:
+                AIMove = SmartMoveFinder.findRandomMove(validMoves)
+            gs.makeMove(AIMove)
+            moveMade = True
+            animate = True
+
         if moveMade:
             if animate:
                  animateMove(gs.moveLog[-1], screen, gs.board, clock)
