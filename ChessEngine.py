@@ -122,3 +122,10 @@ class Move():
 
 
 
+
+
+
+
+
+		self.checkmate = False;
+		self.stalemate = False;

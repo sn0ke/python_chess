@@ -72,12 +72,14 @@ def main():
                     gs.undoMove()
                     moveMade = True
                     animate = False
+                    gameOver = False
                 if e.key == p.K_r:
                     gs = ChessEngine.GameState()
                     SQ_Selected = ()
                     Spielerklickt = []
                     moveMade = False
                     animate = False
+                    gameOver = False
 
         if not gameOver and not humanTurn: #AI move finder
             AIMove = SmartMoveFinder.findBestMove(gs, validMoves)
