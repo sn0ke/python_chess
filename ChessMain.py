@@ -9,7 +9,7 @@ Board_Breite = Board_Height = 400
 MOVE_LOG_PANEL_BREITE = 250
 MOVE_LOG_PANEL_HEIGHT = Board_Height
 Dimension = 8
-SQ_Size = Height // Dimension
+SQ_Size = Board_Height // Dimension
 Max_FPS = 15
 Bilder = {}
 
@@ -134,7 +134,7 @@ def highlightQuadrate(screen, gs, validMoves, SQ_Selected): #Quadrate (gewählt 
             s.fill(p.Color('blue'))
             for move in validMoves:
                 if move.startRow == r and move.startColumn == c:
-                    screen.blit(s(move.endColumn*SQ_Size, move.endRow*SQ_Size))
+                    screen.blit(s, (move.endColumn*SQ_Size, move.endRow*SQ_Size))
 
 
 
@@ -168,7 +168,7 @@ def drawMoveLog(screen, gs, font):
         textObject = font.render(text, 0, p.Color('Black'))
         textlocation = moveLogRect.move(padding, padding)
         screen.blit(textObject, textlocation)
-        textY += textObject.get_Height() + lineSpacing
+        TextY += textObject.get_height() + lineSpacing
 
 def animateMove(move, screen, board, clock): #Animation von Zug
     global colors
