@@ -3,7 +3,7 @@ Dieses Skript ist sozusagen das "backend" des Spiels. Es haltet die aktuelle Spi
 ist für die Einhaltung der Regeln zuständig, führt ein Movelog etc.
 """
 
-setup = ["R", "N", "B", "K", "Q", "B", "N", "R"]
+setup = ["R", "N", "B", "Q", "K", "B", "N", "R"]
 
 class GameState():
 	def __init__(self):
@@ -13,6 +13,10 @@ class GameState():
 		self.init_board(self.board)
 		self.whiteToMove = True
 		self.moveLog = []
+		self.wKLoc = (7, 4)
+		self.bKLoc = (0, 4)
+		self.checkmate = False
+		self.stalemate = False
 
 	#setupaufstellung generieren
 	def init_board(self, board):
@@ -28,6 +32,10 @@ class GameState():
 		self.board[move.endRow][move.endColumn] = move.pieceMoved
 		self.moveLog.append(move)
 		self.whiteToMove = not self.whiteToMove
+		for k, v in {"wK": self.wKLoc, "bK": self.bKLoc}.items():
+			if move.pieceMoved == k:
+				v = (move.endRow, move.endColumn)
+
 
 	# mit dieser Funktion kann ein Zug rückgängig gemacht werden
 	def undoMove(self):
@@ -37,10 +45,26 @@ class GameState():
 			self.board[lastmove.endRow][lastmove.endColumn] = lastmove.pieceCaptured
 			self.whiteToMove = not self.whiteToMove
 			del self.moveLog[-1]
+			for k, v in {"wK": self.wKLoc, "bK": self.bKLoc}.items():
+				if lastmove.pieceMoved == k:
+					v = (lastmove.startRow, lastmove.startColumn)
 
-	# Listet alle Züge auf, welche erlaubt sind für einen GameState
+	# Listet alle Züge auf, welche erlaubt sind für die aktuelle Spielposition mit Schach, Schachmatt, etc.
 	def getValidMoves(self):
+		# 1. Alle Spielzüge berechnen
+		moves = self.getPossibleMoves()
+		# 2. Alle Spielzüge des Gegners berechnen
+
+		# 3. Überprüfen, ob eine möglicher Spielzug des Gegners den König angreift
+		# 4. Wenn ja --> illegaler Zug, wenn nein --> legaler zug
 		return self.getPossibleMoves()
+
+	def inCheck(self):
+		if self.whiteToMove:
+			return self.squareAttacked()
+
+	def squareAttacked(self, r, c):
+		pass
 
 	# Listet alle möglichen Züge auf, ohne auf Schach zu achten
 	def getPossibleMoves(self):
@@ -67,6 +91,20 @@ class GameState():
 		return moves
 
 	def getPawnMoves(self, r, c, moves):
+		directions = {"b": 1, "w": -1}
+		colour = self.board[r][c][0]
+		d = directions[colour]
+		if 0 <= r <= 7:
+			if self.board[r + d][c] == "--":
+				moves.append(Move((r, c), (r + d, c), self.board))
+				if self.board[r + 2 * d][c] == "--":
+					moves.append(Move((r, c), (r + 2 * d, c), self.board))
+			for i in [-1, 1]:
+				if 0 <= c + i <= 7:
+					if self.board[r + 1][c + i] != "--":
+						moves.append(Move((r, c), (r + 1, c + i), self.board))
+
+	def getPawnMoves2(self, r, c, moves):
 		if self.whiteToMove:
 			if self.board[r-1][c] == "--": #überprüfe, ob sich 1 Feld vor dem Bauern eine Figur befindet
 				moves.append(Move((r, c), (r-1, c), self.board))

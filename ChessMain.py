@@ -61,7 +61,8 @@ def main():
                                 Spielerklickt = []
                     if not moveMade:
                         Spielerklickt = [SQ_Selected]
-                location = p.mouse.get_pos() # (x, y) Position der Maus im Fenster
+
+                """location = p.mouse.get_pos() # (x, y) Position der Maus im Fenster
                 col = location[0]//SQ_Size
                 row = location[1]//SQ_Size
                 #print((row,col))
@@ -81,7 +82,7 @@ def main():
                         QuSelected = ()
                         Spielerklickt = []
                 if not moveMade:
-                        Spielerklickt = [QuSelected]
+                        Spielerklickt = [QuSelected]"""
 
             elif e.type == p.KEYDOWN:
                 if e.key == p.K_z:
@@ -117,7 +118,6 @@ def main():
         p.display.flip()
 
 
-
 def highlightQuadrate(screen, gs, validMoves, SQ_Selected): #Quadrate (gewählt & für Züge) werden angeleuchtet
     if SQ_Selected != ():
         r, c, = SQ_Selected
@@ -128,8 +128,9 @@ def highlightQuadrate(screen, gs, validMoves, SQ_Selected): #Quadrate (gewählt 
             screen.blit(s, (c*SQ_Size, r*SQ_Size))
             s.fill(p.Color('blue'))
             for move in validMoves:
-                if move.startRow == r and move.startCol == c:
-                    screen.blit(s(move.endCol*SQ_Size, move.endRow*SQ_Size))
+                if move.startRow == r and move.startColumn == c:
+                    screen.blit(s(move.endColumn*SQ_Size, move.endRow*SQ_Size))
+
 
 def drawGameState(screen, gs, validMoves, SQ_Selected): #verantwortlich für Grafik in GameState
     drawBoard(screen) # Quadrate zeichnen
@@ -173,11 +174,13 @@ def animateMove(move, screen, board, clock): #Animation von Zug
         p.display.flip()
         clock.tick(60)
 
+
 def drawText(screen, text):
     font = p.font.SysFont("Arial", 30, True, False)
     textObject = font.render(text, 0, p.Color('Black'))
     textlocation = p.Rect(0, 0, Breite, Height).move(Breite/2 -textObject.get_Breite()/2, Height/2 - textObject.get_Height()/2)
     screen.blit(textObject, textlocation)
+
 
 if __name__ == "__main__":
     main()
