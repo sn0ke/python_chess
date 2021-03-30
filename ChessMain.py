@@ -3,7 +3,7 @@ Dieses Skrip ist das Frontend, es kümmert sich um das GUI, Interaktion mit dem 
 Darstellung des Bretts und des aktuellen Spielstandes etc.
 """
 import pygame as p
-import ChessEngine, SmartMoveFinder
+import ChessEngine  #, SmartMoveFinder
 
 Board_Breite = Board_Height = 400
 MOVE_LOG_PANEL_BREITE = 250
@@ -40,7 +40,8 @@ def main():
     playerOne = True #Wahr wenn Mensch weiss spielt, falsch wenn AI spielt
     playerTwo = False #gleiches wie oben aber für schwarz
     while running:
-        humanTurn = (gs.whiteToMove and playerOne) or (not gs.whiteToMove and playerTwo)
+        #humanTurn = (gs.whiteToMove and playerOne) or (not gs.whiteToMove and playerTwo)
+        humanTurn = True
         for e in p.event.get():
             if e.type == p.QUIT:
                 running = False
@@ -144,7 +145,7 @@ def drawFiguren(screen, board): #Figuren, Position
             Figur = board[r][c]
             if Figur != "--":
                 screen.blit(Bilder[Figur], p.Rect(c*SQ_Size, r*SQ_Size, SQ_Size, SQ_Size))
-"""
+
 def drawMoveLog(screen, gs, font):
     moveLogRect = p.Rect(Board_Breite, 0, MOVE_LOG_PANEL_BREITE, MOVE_LOG_PANEL_HEIGHT)
     p.draw.rect(screen, p.Color("black"), moveLogRect)
@@ -169,7 +170,7 @@ def drawMoveLog(screen, gs, font):
         textlocation = moveLogRect.move(padding, padding)
         screen.blit(textObject, textlocation)
         TextY += textObject.get_height() + lineSpacing
-"""
+
 def animateMove(move, screen, board, clock): #Animation von Zug
     global colors
     dR = move.endRow - move.startRow
@@ -184,9 +185,9 @@ def animateMove(move, screen, board, clock): #Animation von Zug
         endSquare = p.Rect(move.endColumn*SQ_Size, move.endRow*SQ_Size, SQ_Size, SQ_Size)
         p.draw.rect(screen, color, endSquare)
         if move.pieceCaptured != '--':
-            if move.enPassant:
-                enPassantRow = move.endRow + 1 if move.pieceCaptured[0] == 'b' else move.endRow - 1
-                endSquare = p.Rect(move.endColumn * SQ_Size, enPassantRow * SQ_Size, SQ_Size, SQ_Size)
+            #if move.enPassant:
+             #   enPassantRow = move.endRow + 1 if move.pieceCaptured[0] == 'b' else move.endRow - 1
+              #  endSquare = p.Rect(move.endColumn * SQ_Size, enPassantRow * SQ_Size, SQ_Size, SQ_Size)
             screen.blit(Bilder[move.pieceCaptured], endSquare)
         if move.pieceMoved != '--':
             screen.blit(Bilder[move.pieceMoved], p.Rect(c*SQ_Size, r*SQ_Size, SQ_Size, SQ_Size))

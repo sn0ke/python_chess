@@ -3,6 +3,8 @@ Dieses Skript ist sozusagen das "backend" des Spiels. Es haltet die aktuelle Spi
 ist für die Einhaltung der Regeln zuständig, führt ein Movelog etc.
 """
 
+import itertools
+
 setup = ["R", "N", "B", "Q", "K", "B", "N", "R"]
 
 class GameState():
@@ -32,9 +34,17 @@ class GameState():
 		self.board[move.endRow][move.endColumn] = move.pieceMoved
 		self.moveLog.append(move)
 		self.whiteToMove = not self.whiteToMove
-		for k, v in {"wK": self.wKLoc, "bK": self.bKLoc}.items():
+		if move.pieceMoved == "wK":
+			self.wKLoc = (move.endRow, move.endColumn)
+		if move.pieceMoved == "bK":
+			self.bKLoc = (move.endRow, move.endColumn)
+		"""for k, v in {"wK": self.wKLoc, "bK": self.bKLoc}.items():
 			if move.pieceMoved == k:
+				print("new king loc", k, v)
 				v = (move.endRow, move.endColumn)
+				print(v)"""
+		if move.isPromotion:
+			self.board[move.endRow][move.endColumn] = move.pieceMoved[0] + "Q"
 
 
 	# mit dieser Funktion kann ein Zug rückgängig gemacht werden
@@ -45,30 +55,57 @@ class GameState():
 			self.board[lastmove.endRow][lastmove.endColumn] = lastmove.pieceCaptured
 			self.whiteToMove = not self.whiteToMove
 			del self.moveLog[-1]
-			for k, v in {"wK": self.wKLoc, "bK": self.bKLoc}.items():
+			if lastmove.pieceMoved == "wK":
+				self.wKLoc = (lastmove.startRow, lastmove.startColumn)
+			if lastmove.pieceMoved == "bK":
+				self.bKLoc = (lastmove.startRow, lastmove.startColumn)
+			"""for k, v in {"wK": self.wKLoc, "bK": self.bKLoc}.items():
 				if lastmove.pieceMoved == k:
+					print("undo king loc", k, v)
 					v = (lastmove.startRow, lastmove.startColumn)
+					print(v)"""
 
 	# Listet alle Züge auf, welche erlaubt sind für die aktuelle Spielposition mit Schach, Schachmatt, etc.
 	def getValidMoves(self):
-		# 1. Alle Spielzüge berechnen
-		moves = self.getPossibleMoves()
-		# 2. Alle Spielzüge des Gegners berechnen
-
-		# 3. Überprüfen, ob eine möglicher Spielzug des Gegners den König angreift
+		# 1. Alle Spielzüge berechnen und durchführen
+		# 2. Alle Spielzüge des Gegners berechnen --> Funktion squareAttacked()
+		# 3. Überprüfen, ob eine möglicher Spielzug des Gegners den König angreift --> Funktion inCheck()
 		# 4. Wenn ja --> illegaler Zug, wenn nein --> legaler zug
-		return self.getPossibleMoves()
+		moves = self.getPossibleMoves()
+		for move in range(len(moves)-1, -1, -1):
+			self.makeMove(moves[move])
+			self.whiteToMove = not self.whiteToMove
+			if self.inCheck():
+				moves.remove(moves[move])
+			self.whiteToMove = not self.whiteToMove
+			self.undoMove()
+		if len(moves) == 0:
+			if self.inCheck():
+				self.checkmate = True
+			else:
+				self.stalemate = True
+		else:
+			self.stalemate = False
+			self.checkmate = False
+		print("Validmoves: wK:{} bk: {}".format(self.wKLoc, self.bKLoc))
+		return moves
 
 	def inCheck(self):
-		if self.whiteToMove:
-			return self.squareAttacked()
+		if self.whiteToMove: return self.squareAttacked(self.wKLoc[0], self.wKLoc[1])
+		else: return self.squareAttacked(self.bKLoc[0], self.bKLoc[1])
 
 	def squareAttacked(self, r, c):
-		pass
+		self.whiteToMove = not self.whiteToMove
+		oppMoves = self.getPossibleMoves() # die möglichen Züge des Gegners berechnen
+		self.whiteToMove = not self.whiteToMove
+		for move in oppMoves:
+			if move.endRow == r and move.endColumn == c:
+				return True
+		else: return False
+
 
 	# Listet alle möglichen Züge auf, ohne auf Schach zu achten
 	def getPossibleMoves(self):
-		print(self.board)
 		moves = []
 		for r in range(len(self.board)):
 			for c in range(len(self.board[r])):
@@ -76,7 +113,7 @@ class GameState():
 				piece = self.board[r][c][1]
 				if (colour == "w" and self.whiteToMove) or (colour == "b" and not self.whiteToMove):
 					if piece == "p":
-						self. getPawnMoves(r, c, moves)
+						self.getPawnMoves(r, c, moves)
 					if piece == "R":
 						self.getRookMoves(r, c, moves)
 					if piece == "N":
@@ -87,24 +124,24 @@ class GameState():
 						self.getQueenMoves(r, c, moves)
 					if piece == "K":
 						self.getKingMoves(r, c, moves)
-		print(len(moves))
 		return moves
 
 	def getPawnMoves(self, r, c, moves):
 		directions = {"b": 1, "w": -1}
 		colour = self.board[r][c][0]
 		d = directions[colour]
-		if 0 <= r <= 7:
+		opponentColor = "b" if self.whiteToMove else "w"
+		if 0 <= r <= 6:
 			if self.board[r + d][c] == "--":
 				moves.append(Move((r, c), (r + d, c), self.board))
-				if self.board[r + 2 * d][c] == "--":
+				if self.board[r + 2 * d][c] == "--" and (colour == "w" and r == 6 or colour == "b" and r == 1):
 					moves.append(Move((r, c), (r + 2 * d, c), self.board))
 			for i in [-1, 1]:
-				if 0 <= c + i <= 7:
-					if self.board[r + 1][c + i] != "--":
-						moves.append(Move((r, c), (r + 1, c + i), self.board))
+				if 0 <= c + i <= 6:
+					if self.board[r + d][c + i][0] == opponentColor:
+						moves.append(Move((r, c), (r + d, c + i), self.board))
 
-	def getPawnMoves2(self, r, c, moves):
+	"""def getPawnMoves2(self, r, c, moves):
 		if self.whiteToMove:
 			if self.board[r-1][c] == "--": #überprüfe, ob sich 1 Feld vor dem Bauern eine Figur befindet
 				moves.append(Move((r, c), (r-1, c), self.board))
@@ -135,7 +172,7 @@ class GameState():
 						moves.append(Move((r, c), (r+1, colLeft), self.board))
 				if colRight <= 7:
 					if self.board[r+1][colRight][0] == "w":
-						moves.append(Move((r, c), (r+1, colRight), self.board))
+						moves.append(Move((r, c), (r+1, colRight), self.board))"""
 
 	def getRookMoves(self, r, c, moves):
 		directions = [(1, 0), (-1, 0), (0, 1), (0, -1)]
@@ -234,6 +271,9 @@ class Move():
 		self.endColumn = endSQ[1]
 		self.pieceMoved = board[self.startRow][self.startColumn]
 		self.pieceCaptured = board[self.endRow][self.endColumn]
+		self.isPromotion = False
+		if (self.pieceMoved == "wp" and self.endRow == 0) or (self.pieceMoved == "bp" and self.endRow == 7):
+			self.isPromotion = True
 		self.moveID = self.startRow * 1000 + self.startColumn * 100 + self.endRow * 10 + self.endColumn
 
 	# Überschreiben der euqals Methode, welche dazu verwendet wird um herauszufinden, ob es sich bei zwei Instanzen um die selbe handelt.
@@ -251,21 +291,3 @@ class Move():
 	#Diese Funktion wandelt mit Hilfe der Dictionnaries von weiter oben Zeilen und Spalten Notation in Schachnotation um
 	def getRankFile(self, r,c):
 		return self.colsToFiles[c] + self.rowsToRanks[r]
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-		self.checkmate = False;
-		self.stalemate = False;
