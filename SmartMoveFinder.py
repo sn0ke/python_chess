@@ -9,7 +9,7 @@ DEPTH = 2 #variabel
 def findRandomMove(validMoves):
     return validMoves[random.randint(0, len(validMoves)-1)]
 
-def findBestMove (gs, validMoves):
+def findBestMove (gs, validMoves): #Grundidee für besten Zug, denkt keine Züge voraus
     turnMultiplier = 1 if gs.whiteToMove else -1
     opponentsMinMaxScore = CHECKMATE
     bestPlayerMove = None
@@ -35,7 +35,7 @@ def findBestMove (gs, validMoves):
         gs.undoMove()
     return bestPlayerMove
 
-def findBestMove(gs, validMoves):
+def findBestMove(gs, validMoves): #führt es aus, je nachdem welches gewählt
     global nextMove
     nextMove = None
     random.shuffle(validMoves)
@@ -74,7 +74,7 @@ def findMoveMinMax(gs, validMoves, depth): #depth zeigt wie viele Züge voraus g
             gs.undoMove()
         return minScore
 
-def findMoveNegaMax(gs, validMoves, depth, turnMultiplier):
+def findMoveNegaMax(gs, validMoves, depth, turnMultiplier): #Idee von oben, aber vereinfacht
     global nextMove
     if depth == 0:
         return turnMultiplier * scoreBoard(gs)
@@ -91,7 +91,7 @@ def findMoveNegaMax(gs, validMoves, depth, turnMultiplier):
         gs.undoMove()
     return maxScore
 
-def findMoveNegaMaxAlphaBeta(gs, validMoves, depth, alpha, beta, turnMultiplier):
+def findMoveNegaMaxAlphaBeta(gs, validMoves, depth, alpha, beta, turnMultiplier): #Idee von NegaMax, aber so dass es schneller geht
     global nextMove
     if depth == 0:
         return turnMultiplier * scoreBoard(gs)
